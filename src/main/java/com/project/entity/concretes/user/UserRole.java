@@ -1,5 +1,6 @@
 package com.project.entity.concretes.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.entity.enums.RoleType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -28,6 +30,10 @@ public class UserRole {
 
 
     private String roleName;
+
+    @OneToMany(mappedBy = "userRole")
+    @JsonIgnore
+    private List<User> users;
 
 
 

@@ -1,5 +1,6 @@
 package com.project.entity.concretes.business;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.entity.concretes.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Data
@@ -22,8 +24,9 @@ public class Department {
 
     private String departmentName;
 
-    @OneToMany(mappedBy = "department",cascade = CascadeType.ALL)
-    private List<User> doctors;
+    @ManyToMany
+    @JsonIgnore
+    private Set<TreatmentPlan> treatmentPlans;
 
 
 }

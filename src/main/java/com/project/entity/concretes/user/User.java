@@ -71,30 +71,51 @@ public class User {
 
     private Boolean isChiefDoctor; //Uzman Doktor mu?
 
-    private Long doctorId;  //bu hastalar icin gerekli, kendi doktornunun id si buraya yazilacak
+    private Long patientDoctorId;  //bu hastalar icin gerekli, kendi doktornunun id si buraya yazilacak
 
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
 
+
+    /*
+       patientInfo -> Bu bir hasta ise patientInfo bilgileri olmalı
+       */
     @OneToMany(mappedBy = "doctor",cascade = CascadeType.REMOVE)  //mappedBy = "patient" de olabilir.
     // CascadeType.REMOVE ile bir user silindiğinde bu user'a ait bilgileri de silinsin.
     private List<PatientInfo> patientInfos;
 
-    @OneToMany(mappedBy = "doctor", cascade = CascadeType.REMOVE)
-    private List<TreatmentPlan> treatmentPlans;
+
+     /*
+       //patient yada doctor da olsa threatmentPlan bilgileri olmalı
+        */
+     @ManyToMany
+     @JsonIgnore
+     @JoinTable(
+             name = "user_treatmentplan",
+             joinColumns = @JoinColumn(name = "user_id"),
+             inverseJoinColumns = @JoinColumn(name = "treatmentplan_id")
+     )
+     private Set<TreatmentPlan> treatmentPlanList;
+
+    /*
+        // appointment -> Eğer user doctor da olsa patient de olsa appointment ile ilişkisi olması lazım. Benim randevularımı getir dediğinde ileriki tarihlerde olan randevuları görmesi gerekli
+        */
 
     @ManyToMany
     @JsonIgnore
     @JoinTable(
-            name = "user_appointment",
-            joinColumns = @JoinColumn(name="user_id"),
+            name = "appointment_patient_table",
+            joinColumns = @JoinColumn(name="patient_id"),
             inverseJoinColumns = @JoinColumn(name = "appointment_id")
 
     )
-    private Set<Appointment> AppointmentList;
+    private List<Appointment> AppointmentList;
 
 
+    /*
+   //userRole -> Herbir kullanıcının bir user rolü olmalıdır.
+    */
     @OneToOne
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private UserRole userRole;

@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 @Builder(toBuilder = true)
@@ -30,30 +31,20 @@ public class Appointment {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate appointmentDate;
 
-    @ManyToOne
+    /*
+   Bu classın sadece userlar ile alakası var. Bir doctorun birden fazla randevusu olabilir
+    */
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private User doctor;
 
-    @ManyToOne
-    private User patient;
 
-    @ManyToOne
-    private PatientInfo patientInfo;
-
-    @OneToOne
-    @JoinColumn(name = "medical_record_id")
-    private MedicalRecord medicalRecord;
-
-
-    @ManyToMany(mappedBy = "AppointmentList",fetch = FetchType.EAGER)
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private Set<User> users;
-
-    @PreRemove
-    private void removeAppointmentFromUser(){
-        users.forEach(user -> user.getAppointmentList().remove(this));
-        //Bu kullanicinin appointmenlerini getir ve bunlarin arasinda silmek istedigin nesneyi sil
-        //Bu method bir appointment silmek istedigim zaman tetiklenecek ve gidip o appointmeni silecek
-    }
+    @ManyToMany
+    @JoinTable(
+            name = "appointment_patient_table",
+            joinColumns = @JoinColumn(name = "appointment_id"),
+            inverseJoinColumns = @JoinColumn(name = "appointment_id")
+    )
+    private List<User> patientList;
 
 
 
